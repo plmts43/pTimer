@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <title>Timer App</title>
+</head>
+
+<body>
+    <div class="timer-container">
+        <div class="timer">
+            <label for="time-input">Enter time (hh:mm:ss):</label>
+            <input type="text" id="time-input" placeholder="00:00:00">
+            <button id="start-button">Start</button>
+            <button id="pause-button">Pause</button>
+            <button id="restart-button">Restart</button>
+            <label for="progressive-toggle">Progressive Timer:</label>
+            <input type="checkbox" id="progressive-toggle">
+        </div>
+        <div class="progress-bar">
+            <div class="progress"></div>
+        </div>
+    </div>
+    <audio id="full-timer-audio" src="full_timer.wav"></audio>
+    <audio id="progressive-timer-audio" src="progressive_timer.wav"></audio>
+    <script src="script.js"></script>
+</body>
+
+</html>
