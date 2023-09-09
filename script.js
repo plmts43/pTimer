@@ -1,61 +1,102 @@
-const timeInput = document.getElementById("time-input");
-const startButton = document.getElementById("start-button");
-const pauseButton = document.getElementById("pause-button");
-const restartButton = document.getElementById("restart-button");
-const progressBar = document.querySelector(".progress");
-const fullTimerAudio = document.getElementById("full-timer-audio");
-const progressiveTimerAudio = document.getElementById("progressive-timer-audio");
-const progressiveToggle = document.getElementById("progressive-toggle");
+let totalSeconds = 0;
+let remainingSeconds = totalSeconds;
+let interval = null;
+let isRunning = false;
+let progressiveTimer = false;
+let sound = null;
 
-let timer;
-let totalTime;
-let currentTime;
-let progressiveIntervals;
+const hoursInput = document.querySelector('#hours');
+const minutesInput = document.querySelector('#minutes');
+const secondsInput = document.querySelector('#seconds');
+const startPauseButton = document.querySelector('#start-pause');
+const restartButton = document.querySelector('#restart');
+const timerDisplay = document.querySelector('.timer-display');
+const progressBar = document.querySelector('.progress-bar');
+const stopSoundButton = document.querySelector('#stop-sound');
 
 function startTimer() {
-    const timeParts = timeInput.value.split(":");
-    totalTime = parseInt(timeParts[0]) * 3600 + parseInt(timeParts[1]) * 60 + parseInt(timeParts[2]);
-    currentTime = totalTime;
-    progressiveIntervals = [0.05, 0.2, 0.5].map(interval => Math.floor(totalTime * interval));
-
-    timer = setInterval(updateTimer, 1000);
-    startButton.disabled = true;
-    pauseButton.disabled = false;
-    restartButton.disabled = false;
+    if (isRunning) return;
+    isRunning = true;
+    startPauseButton.textContent = 'Pause';
+    totalSeconds = parseInt(hoursInput.value) * 3600 + parseInt(minutesInput.value) * 60 + parseInt(secondsInput.value);
+    remainingSeconds = totalSeconds;
+    interval = setInterval(() => {
+        remainingSeconds -= 1;
+        updateTimerDisplay();
+        updateProgressBar();
+        if (progressiveTimer && (remainingSeconds === Math.floor(totalSeconds * 0.5) || remainingSeconds === Math.floor(totalSeconds * 0.2) || remainingSeconds === Math.floor(totalSeconds * 0.05))) {
+            playSound('resources/p_timer.wav');
+        }
+        if (remainingSeconds === 0) {
+            clearInterval(interval);
+            sound = playSound('resources/full_timer.wav');
+            stopSoundButton.style.display = 'block';
+            isRunning = false;
+            startPauseButton.textContent = 'Start';
+        }
+    }, 1000);
 }
 
 function pauseTimer() {
-    clearInterval(timer);
-    startButton.disabled = false;
-    pauseButton.disabled = true;
+    if (!isRunning) return;
+    isRunning = false;
+    startPauseButton.textContent = 'Start';
+    clearInterval(interval);
+    if (sound) {
+        sound.pause();
+        sound.currentTime = 0;
+    }
 }
 
 function restartTimer() {
-    clearInterval(timer);
-    startButton.disabled = false;
-    pauseButton.disabled = true;
-    progressBar.style.width = "0";
+    pauseTimer();
+    remainingSeconds = totalSeconds;
+    updateTimerDisplay();
+    updateProgressBar();
+    stopSoundButton.style.display = 'none';
 }
 
-function updateTimer() {
-    currentTime--;
-
-    const progressPercentage = ((totalTime - currentTime) / totalTime) * 100;
-    progressBar.style.width = progressPercentage + "%";
-
-    if (progressiveToggle.checked && progressiveIntervals.includes(currentTime)) {
-        progressiveTimerAudio.play();
-    }
-
-    if (currentTime === 0) {
-        fullTimerAudio.play();
-        clearInterval(timer);
-        startButton.disabled = true;
-        pauseButton.disabled = true;
-        restartButton.disabled = true;
-    }
+function updateTimerDisplay() {
+    const hours = Math.floor(remainingSeconds / 3600);
+    const minutes = Math.floor((remainingSeconds % 3600) / 60);
+    const seconds = remainingSeconds % 60;
+    timerDisplay.textContent = `${hours.toString().padStart(2, '0')} : ${minutes.toString().padStart(2, '0')} : ${seconds.toString().padStart(2, '0')}`;
+    document.title = timerDisplay.textContent;
 }
 
-startButton.addEventListener("click", startTimer);
-pauseButton.addEventListener("click", pauseTimer);
-restartButton.addEventListener("click", restartTimer);
+function updateProgressBar() {
+    const percentage = (totalSeconds - remainingSeconds) / totalSeconds * 100;
+    progressBar.style.width = `${percentage}%`;
+}
+
+function playSound(src) {
+    const audio = new Audio(src);
+    audio.play();
+    return audio;
+}
+
+startPauseButton.addEventListener('click', () => {
+    if (isRunning) {
+        pauseTimer();
+    } else {
+        startTimer();
+    }
+});
+
+restartButton.addEventListener('click', () => {
+    restartTimer();
+});
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        startTimer();
+    }
+});
+
+stopSoundButton.addEventListener('click', () => {
+    if (sound) {
+        sound.pause();
+        sound.currentTime = 0;
+        stopSoundButton.style.display = 'none';
+    }
+});

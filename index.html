@@ -1,32 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <title>Timer App</title>
+    <title>pTimer</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Eagle+Lake">
+    <link rel="shortcut icon" type="image/x-icon" href="resources/favicon.ico">
 </head>
-
 <body>
-    <div class="timer-container">
-        <div class="timer">
-            <label for="time-input">Enter time (hh:mm:ss):</label>
-            <input type="text" id="time-input" placeholder="00:00:00">
-            <button id="start-button">Start</button>
-            <button id="pause-button">Pause</button>
-            <button id="restart-button">Restart</button>
-            <label for="progressive-toggle">Progressive Timer:</label>
-            <input type="checkbox" id="progressive-toggle">
+    <div class="container">
+        <h1 class="title">pTimer</h1>
+        <div class="timer-inputs">
+            <input type="number" id="hours" min="0" value="0">
+            <span class="time-separator">:</span>
+            <input type="number" id="minutes" min="0" value="0">
+            <span class="time-separator">:</span>
+            <input type="number" id="seconds" min="0" value="0">
         </div>
-        <div class="progress-bar">
-            <div class="progress"></div>
+        <div class="timer-display">00 : 00 : 00</div>
+        <div class="progress-bar-container">
+            <div class="progress-bar"></div>
+        </div>
+        <div class="button-container">
+            <button id="start-pause">Start</button>
+            <button id="restart">Restart</button>
+            <button id="stop-sound" style="display: none;">Stop Sound</button>
         </div>
     </div>
-    <audio id="full-timer-audio" src="full_timer.wav"></audio>
-    <audio id="progressive-timer-audio" src="progressive_timer.wav"></audio>
+    
     <script src="script.js"></script>
 </body>
-
 </html>
